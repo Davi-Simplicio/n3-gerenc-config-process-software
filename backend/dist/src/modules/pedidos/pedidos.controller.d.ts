@@ -6,10 +6,10 @@ export declare class PedidosController {
     create(createPedidoDto: CreatePedidoDto): Promise<{
         itens: {
             id: number;
+            pedidoId: number;
             produtoId: number;
             quantidade: number;
             precoUnit: number;
-            pedidoId: number;
         }[];
     } & {
         createdAt: Date;
@@ -29,10 +29,10 @@ export declare class PedidosController {
             };
             itens: {
                 id: number;
+                pedidoId: number;
                 produtoId: number;
                 quantidade: number;
                 precoUnit: number;
-                pedidoId: number;
             }[];
         } & {
             createdAt: Date;
@@ -65,10 +65,10 @@ export declare class PedidosController {
             };
         } & {
             id: number;
+            pedidoId: number;
             produtoId: number;
             quantidade: number;
             precoUnit: number;
-            pedidoId: number;
         })[];
     } & {
         createdAt: Date;
@@ -84,4 +84,12 @@ export declare class PedidosController {
         clienteId: number;
         total: number;
     }>;
+    findProdutos(id: string): Promise<{
+        nome: string;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        descricao: string | null;
+        preco: number;
+    }[]>;
 }

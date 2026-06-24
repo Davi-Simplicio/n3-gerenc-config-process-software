@@ -48,6 +48,15 @@ let ProdutosService = class ProdutosService {
             throw new common_1.NotFoundException('Produto não encontrado');
         }
     }
+    async findPedidos(id) {
+        const produto = await this.prisma.produto.findUnique({
+            where: { id },
+            include: { itensPedido: { include: { pedido: true } } }
+        });
+        if (!produto)
+            throw new common_1.NotFoundException('Produto não encontrado');
+        return produto.itensPedido.map(item => item.pedido);
+    }
 };
 exports.ProdutosService = ProdutosService;
 exports.ProdutosService = ProdutosService = __decorate([

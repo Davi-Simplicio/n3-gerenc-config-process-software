@@ -57,4 +57,13 @@ export class PedidosService {
     try { return await this.prisma.pedido.delete({ where: { id } }); } 
     catch (e) { throw new NotFoundException('Pedido não encontrado'); }
   }
+
+  async findProdutos(id: number) {
+    const pedido = await this.prisma.pedido.findUnique({
+      where: { id },
+      include: { itens: { include: { produto: true } } }
+    });
+    if (!pedido) throw new NotFoundException('Pedido não encontrado');
+    return pedido.itens.map(item => item.produto);
+  }
 }

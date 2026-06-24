@@ -22,4 +22,7 @@ export class ProdutosController {
 
   @Delete(':id') @ApiOperation({ summary: 'Excluir produto' }) @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) { return this.produtosService.remove(+id); }
+
+  @Get(':id/pedidos') @ApiOperation({ summary: 'Retornar os pedidos que contém este produto' })
+  findPedidos(@Param('id') id: string) { return this.produtosService.findPedidos(+id); }
 }

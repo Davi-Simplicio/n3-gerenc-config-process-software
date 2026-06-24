@@ -19,4 +19,7 @@ export class PedidosController {
 
   @Delete(':id') @ApiOperation({ summary: 'Excluir pedido' }) @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: string) { return this.pedidosService.remove(+id); }
+
+  @Get(':id/produtos') @ApiOperation({ summary: 'Retornar os produtos de um pedido' })
+  findProdutos(@Param('id') id: string) { return this.pedidosService.findProdutos(+id); }
 }

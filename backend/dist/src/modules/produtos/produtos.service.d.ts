@@ -49,4 +49,11 @@ export declare class ProdutosService {
         descricao: string | null;
         preco: number;
     }>;
+    findPedidos(id: number): Promise<{
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        clienteId: number;
+        total: number;
+    }[]>;
 }

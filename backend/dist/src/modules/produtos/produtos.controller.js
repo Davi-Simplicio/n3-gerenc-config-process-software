@@ -27,6 +27,7 @@ let ProdutosController = class ProdutosController {
     findOne(id) { return this.produtosService.findOne(+id); }
     update(id, updateProdutoDto) { return this.produtosService.update(+id, updateProdutoDto); }
     remove(id) { return this.produtosService.remove(+id); }
+    findPedidos(id) { return this.produtosService.findPedidos(+id); }
 };
 exports.ProdutosController = ProdutosController;
 __decorate([
@@ -73,6 +74,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ProdutosController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)(':id/pedidos'),
+    (0, swagger_1.ApiOperation)({ summary: 'Retornar os pedidos que contém este produto' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProdutosController.prototype, "findPedidos", null);
 exports.ProdutosController = ProdutosController = __decorate([
     (0, swagger_1.ApiTags)('produtos'),
     (0, common_1.Controller)('produtos'),

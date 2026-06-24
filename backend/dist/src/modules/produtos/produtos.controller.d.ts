@@ -49,4 +49,11 @@ export declare class ProdutosController {
         descricao: string | null;
         preco: number;
     }>;
+    findPedidos(id: string): Promise<{
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        clienteId: number;
+        total: number;
+    }[]>;
 }

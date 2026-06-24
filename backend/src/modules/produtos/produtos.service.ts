@@ -32,4 +32,13 @@ export class ProdutosService {
     try { return await this.prisma.produto.delete({ where: { id } }); } 
     catch (e) { throw new NotFoundException('Produto não encontrado'); }
   }
+
+  async findPedidos(id: number) {
+    const produto = await this.prisma.produto.findUnique({
+      where: { id },
+      include: { itensPedido: { include: { pedido: true } } }
+    });
+    if (!produto) throw new NotFoundException('Produto não encontrado');
+    return produto.itensPedido.map(item => item.pedido);
+  }
 }
