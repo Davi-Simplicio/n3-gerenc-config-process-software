@@ -30,6 +30,19 @@ npm install
 npm run dev
 ```
 
+### 3. CI/CD (Testes Locais com Drone CLI)
+Para executar e validar localmente as esteiras de CI/CD definidas no arquivo `.drone.yml`, certifique-se de que o **Docker** está rodando no seu computador e utilize o **Drone CLI** (presente na raiz do projeto):
+
+No terminal (na raiz do projeto), execute o pipeline do Back-end:
+```bash
+./drone.exe exec --pipeline backend-ci
+```
+
+Para executar o pipeline do Front-end:
+```bash
+./drone.exe exec --pipeline frontend-ci
+```
+
 ## Integrantes da Equipe
 
 - Arthur Bretzke
