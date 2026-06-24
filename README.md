@@ -49,6 +49,6 @@ Para executar o pipeline do Front-end:
 - Davi Simplício
 - Gabriel Koehler
 - Geison Carlos Melo
-- Jonatas
+- Jonatas Jackson Gonçalves
 - Kaique Fernandes
 - Wesley Diorrani Ferreira
