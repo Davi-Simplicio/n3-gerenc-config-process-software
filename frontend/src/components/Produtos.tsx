@@ -11,9 +11,10 @@ import {
   Loader2,
 } from "lucide-react";
 import { api } from "../services/api";
+import type { Produto } from "../types";
 
 export function Produtos() {
-  const [produtos, setProdutos] = useState<any[]>([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
   const [nome, setNome] = useState("");
   const [preco, setPreco] = useState("");
   const [descricao, setDescricao] = useState("");

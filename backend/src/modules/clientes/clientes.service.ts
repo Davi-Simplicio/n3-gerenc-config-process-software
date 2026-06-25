@@ -6,7 +6,9 @@ import { CreateClienteDto } from './dto/cliente.dto';
 export class ClientesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreateClienteDto) { return this.prisma.cliente.create({ data }); }
+  async create(data: CreateClienteDto) {
+    return this.prisma.cliente.create({ data });
+  }
 
   async findAll(page: number, size: number) {
     const skip = page * size;
@@ -14,22 +16,37 @@ export class ClientesService {
       this.prisma.cliente.findMany({ skip, take: size }),
       this.prisma.cliente.count(),
     ]);
-    return { content, page, size, totalElements, totalPages: Math.ceil(totalElements / size) };
+    return {
+      content,
+      page,
+      size,
+      totalElements,
+      totalPages: Math.ceil(totalElements / size),
+    };
   }
 
   async findOne(id: number) {
-    const cliente = await this.prisma.cliente.findUnique({ where: { id }, include: { pedidos: true } });
+    const cliente = await this.prisma.cliente.findUnique({
+      where: { id },
+      include: { pedidos: true },
+    });
     if (!cliente) throw new NotFoundException('Cliente não encontrado');
     return cliente;
   }
 
   async update(id: number, data: Partial<CreateClienteDto>) {
-    try { return await this.prisma.cliente.update({ where: { id }, data }); } 
-    catch (e) { throw new NotFoundException('Cliente não encontrado'); }
+    try {
+      return await this.prisma.cliente.update({ where: { id }, data });
+    } catch (e) {
+      throw new NotFoundException('Cliente não encontrado');
+    }
   }
 
   async remove(id: number) {
-    try { return await this.prisma.cliente.delete({ where: { id } }); } 
-    catch (e) { throw new NotFoundException('Cliente não encontrado'); }
+    try {
+      return await this.prisma.cliente.delete({ where: { id } });
+    } catch (e) {
+      throw new NotFoundException('Cliente não encontrado');
+    }
   }
 }

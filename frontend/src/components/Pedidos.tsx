@@ -8,16 +8,31 @@ import {
   Plus,
   Minus,
   Loader2,
+  ChevronDown,
+  ChevronUp,
+  Eye,
 } from "lucide-react";
 import { api } from "../services/api";
+import type {
+  Cliente,
+  FormItemPedido,
+  ItemPedido,
+  Pedido,
+  Produto,
+} from "../types";
 
 export function Pedidos() {
-  const [pedidos, setPedidos] = useState<any[]>([]);
-  const [clientes, setClientes] = useState<any[]>([]);
-  const [produtos, setProdutos] = useState<any[]>([]);
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
   const [clienteId, setClienteId] = useState("");
-  const [itens, setItens] = useState<any[]>([{ produtoId: "", quantidade: 1 }]);
+  const [itens, setItens] = useState<FormItemPedido[]>([
+    { produtoId: "", quantidade: 1 },
+  ]);
   const [loading, setLoading] = useState(false);
+
+  // Track which order drawer is currently open
+  const [expandedPedidoId, setExpandedPedidoId] = useState<number | null>(null);
 
   const load = async () => {
     try {
@@ -37,6 +52,10 @@ export function Pedidos() {
   useEffect(() => {
     load();
   }, []);
+
+  const toggleExpand = (id: number) => {
+    setExpandedPedidoId(expandedPedidoId === id ? null : id);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,9 +78,16 @@ export function Pedidos() {
     }
   };
 
-  const handleItemChange = (index: number, field: string, value: string) => {
+  const handleItemChange = (
+    index: number,
+    field: keyof FormItemPedido,
+    value: string | number,
+  ) => {
     const next = [...itens];
-    next[index][field] = value;
+
+    // Using 'as any' here momentarily bypasses the strict key matching assignment mutation conflict
+    (next[index] as any)[field] = value;
+
     setItens(next);
   };
 
@@ -83,6 +109,7 @@ export function Pedidos() {
     if (!confirm("Tem certeza que deseja cancelar este pedido?")) return;
     try {
       await api.delete(`/pedidos/${id}`);
+      if (expandedPedidoId === id) setExpandedPedidoId(null);
       load();
     } catch (e) {
       console.error(e);
@@ -97,7 +124,7 @@ export function Pedidos() {
           <h1 style={styles.mainTitle}>Pedidos de Venda</h1>
           <p style={styles.subtitle}>
             Gerencie ordens de serviço, adicione produtos e visualize seu
-            histórico.
+            histórico detalhado.
           </p>
         </div>
       </header>
@@ -140,7 +167,7 @@ export function Pedidos() {
                     }
                     required
                   >
-                    <option value="">Produto…</option>
+                    <option value="">Produto...</option>
                     {produtos.map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.nome}
@@ -224,45 +251,198 @@ export function Pedidos() {
             <table style={styles.table}>
               <thead>
                 <tr>
-                  <th style={{ ...styles.th, width: 80 }}>ID</th>
+                  <th style={{ ...styles.th, width: 40 }}></th>
+                  <th style={{ ...styles.th, width: 70 }}>ID</th>
                   <th style={styles.th}>Cliente</th>
                   <th style={styles.th}>Valor Total</th>
-                  <th style={{ ...styles.th, width: 60, textAlign: "center" }}>
+                  <th style={{ ...styles.th, width: 90, textAlign: "center" }}>
                     Ações
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {pedidos.map((p) => (
-                  <tr key={p.id} style={styles.tr}>
-                    <td style={{ ...styles.td, ...styles.mono }}>#{p.id}</td>
-                    <td style={{ ...styles.td, fontWeight: 500 }}>
-                      {p.cliente?.nome}
-                    </td>
-                    <td
-                      style={{
-                        ...styles.td,
-                        fontVariantNumeric: "tabular-nums",
-                        color: "#0F172A",
-                        fontWeight: 600,
-                      }}
-                    >
-                      R$ {p.total.toFixed(2)}
-                    </td>
-                    <td style={{ ...styles.td, textAlign: "center" }}>
-                      <button
-                        style={styles.iconBtn}
-                        title="Cancelar pedido"
-                        onClick={() => handleDelete(p.id)}
+                {pedidos.map((p) => {
+                  const isExpanded = expandedPedidoId === p.id;
+                  return (
+                    <Fragment key={p.id}>
+                      {/* Main Order Info Row */}
+                      <tr
+                        style={{
+                          ...styles.tr,
+                          cursor: "pointer",
+                          background: isExpanded ? "#F8FAFC" : "transparent",
+                        }}
+                        onClick={() => toggleExpand(p.id)}
                       >
-                        <Trash2 size={15} color="#EF4444" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        <td style={styles.td}>
+                          {isExpanded ? (
+                            <ChevronUp size={16} color="#64748B" />
+                          ) : (
+                            <ChevronDown size={16} color="#64748B" />
+                          )}
+                        </td>
+                        <td style={{ ...styles.td, ...styles.mono }}>
+                          #{p.id}
+                        </td>
+                        <td style={{ ...styles.td, fontWeight: 500 }}>
+                          {p.cliente?.nome}
+                        </td>
+                        <td
+                          style={{
+                            ...styles.td,
+                            fontVariantNumeric: "tabular-nums",
+                            color: "#0F172A",
+                            fontWeight: 600,
+                          }}
+                        >
+                          R$ {p.total.toFixed(2)}
+                        </td>
+                        <td
+                          style={{ ...styles.td, textAlign: "center" }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "0.35rem",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <button
+                              style={styles.iconBtn}
+                              title="Ver itens do pedido"
+                              onClick={() => toggleExpand(p.id)}
+                            >
+                              <Eye size={15} color="#475569" />
+                            </button>
+                            <button
+                              style={styles.iconBtn}
+                              title="Cancelar pedido"
+                              onClick={() => handleDelete(p.id)}
+                            >
+                              <Trash2 size={15} color="#EF4444" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      {/* Nested Item Details Drawer Row */}
+                      {isExpanded && (
+                        <tr>
+                          <td colSpan={5} style={styles.expandedCell}>
+                            <div style={styles.detailsContainer}>
+                              <div style={styles.detailsTitle}>
+                                Itens Inclusos no Pedido:
+                              </div>
+                              <table style={styles.subTable}>
+                                <thead>
+                                  <tr>
+                                    <th style={styles.subTh}>Produto</th>
+                                    <th
+                                      style={{
+                                        ...styles.subTh,
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      Qtd
+                                    </th>
+                                    <th
+                                      style={{
+                                        ...styles.subTh,
+                                        textAlign: "right",
+                                      }}
+                                    >
+                                      Preço Unit.
+                                    </th>
+                                    <th
+                                      style={{
+                                        ...styles.subTh,
+                                        textAlign: "right",
+                                      }}
+                                    >
+                                      Subtotal
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {p.itens?.map(
+                                    (item: ItemPedido, idx: number) => (
+                                      <tr key={idx} style={styles.subTr}>
+                                        <td style={styles.subTd}>
+                                          {item.produto?.nome ||
+                                            "Produto Desconhecido"}
+                                        </td>
+                                        <td
+                                          style={{
+                                            ...styles.subTd,
+                                            textAlign: "center",
+                                            fontVariantNumeric: "tabular-nums",
+                                          }}
+                                        >
+                                          {item.quantidade}
+                                        </td>
+                                        <td
+                                          style={{
+                                            ...styles.subTd,
+                                            textAlign: "right",
+                                            fontVariantNumeric: "tabular-nums",
+                                          }}
+                                        >
+                                          R${" "}
+                                          {(
+                                            item.precoUnit ||
+                                            item.produto?.preco ||
+                                            0
+                                          ).toFixed(2)}
+                                        </td>
+                                        <td
+                                          style={{
+                                            ...styles.subTd,
+                                            textAlign: "right",
+                                            fontVariantNumeric: "tabular-nums",
+                                            fontWeight: 500,
+                                            color: "#1E293B",
+                                          }}
+                                        >
+                                          R${" "}
+                                          {(
+                                            item.quantidade *
+                                            (item.precoUnit ||
+                                              item.produto?.preco ||
+                                              0)
+                                          ).toFixed(2)}
+                                        </td>
+                                      </tr>
+                                    ),
+                                  )}
+                                  {(!p.itens || p.itens.length === 0) && (
+                                    <tr>
+                                      <td
+                                        colSpan={4}
+                                        style={{
+                                          ...styles.subTd,
+                                          color: "#94A3B8",
+                                          textAlign: "center",
+                                          padding: "1rem",
+                                        }}
+                                      >
+                                        Sem informações de itens para este
+                                        pedido.
+                                      </td>
+                                    </tr>
+                                  )}
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
                 {pedidos.length === 0 && (
                   <tr>
-                    <td colSpan={4} style={styles.empty}>
+                    <td colSpan={5} style={styles.empty}>
                       Nenhum pedido registrado no sistema.
                     </td>
                   </tr>
@@ -275,6 +455,9 @@ export function Pedidos() {
     </div>
   );
 }
+
+// Simple Fragment Polyfill fallback to make sure vanilla import works cleanly
+const Fragment = (props: any) => props.children;
 
 const styles: Record<string, React.CSSProperties> = {
   page: {
@@ -491,5 +674,47 @@ const styles: Record<string, React.CSSProperties> = {
   },
   spinner: {
     animation: "spin 1s linear infinite",
+  },
+  /* Styles for the sub-nested tracking panel */
+  expandedCell: {
+    padding: "0 1rem 1.25rem 2.5rem",
+    backgroundColor: "#F8FAFC",
+    borderBottom: "1px solid #E2E8F0",
+  },
+  detailsContainer: {
+    background: "#FFFFFF",
+    border: "1px solid #E2E8F0",
+    borderRadius: "8px",
+    padding: "1rem",
+    boxShadow: "inset 0 1px 2px 0 rgba(0,0,0,0.02)",
+  },
+  detailsTitle: {
+    fontSize: "0.8125rem",
+    fontWeight: 700,
+    color: "#475569",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    marginBottom: "0.75rem",
+  },
+  subTable: {
+    width: "100%",
+    borderCollapse: "collapse",
+    fontSize: "0.8125rem",
+  },
+  subTh: {
+    textAlign: "left",
+    color: "#94A3B8",
+    fontWeight: 600,
+    textTransform: "uppercase",
+    letterSpacing: "0.02em",
+    padding: "0.4rem 0.5rem",
+    borderBottom: "1px solid #F1F5F9",
+  },
+  subTr: {
+    borderBottom: "1px solid #F8FAFC",
+  },
+  subTd: {
+    padding: "0.6rem 0.5rem",
+    color: "#475569",
   },
 };

@@ -39,9 +39,11 @@ describe('ClientesService', () => {
   });
 
   it('should list clients with pagination', async () => {
-    mockPrismaService.cliente.findMany.mockResolvedValue([{ id: 1, nome: 'Test' }]);
+    mockPrismaService.cliente.findMany.mockResolvedValue([
+      { id: 1, nome: 'Test' },
+    ]);
     mockPrismaService.cliente.count.mockResolvedValue(1);
-    
+
     const result = await service.findAll(0, 10);
     expect(result.content).toHaveLength(1);
     expect(result.totalElements).toBe(1);

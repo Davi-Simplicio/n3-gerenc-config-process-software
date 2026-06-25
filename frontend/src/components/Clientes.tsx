@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { UserPlus, Trash2, Users, Mail, User, Loader2 } from "lucide-react";
 import { api } from "../services/api";
+import type { Cliente } from "../types";
 
 export function Clientes() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [clientes, setClientes] = useState<any[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
