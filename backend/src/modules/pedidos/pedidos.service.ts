@@ -13,7 +13,7 @@ export class PedidosService {
   async create(data: CreatePedidoDto) {
     const { clienteId, itens } = data;
 
-    // Validate products and calculate total
+    // Validar produtos e calcular o total
     let total = 0;
     const itensComPreco: any[] = [];
 
@@ -57,7 +57,7 @@ export class PedidosService {
           cliente: true,
           itens: {
             include: {
-              produto: true, // <-- This is what fills item.produto!
+              produto: true, // <-- Isso preenche item.produto!
             },
           },
         },
