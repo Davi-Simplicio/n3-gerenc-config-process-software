@@ -1,3 +1,4 @@
+# Configuração da infraestrutura de CI/CD (Gogs + Drone CI)
 version: '3.8'
 
 services:
