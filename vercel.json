@@ -3,12 +3,12 @@
         "frontend": {
             "root": "frontend",
             "routePrefix": "/",
-            "framework": "next.js"
+            "framework": "nextjs"
         },
         "backend": {
             "root": "backend",
             "routePrefix": "/_/backend",
-            "framework": "nest.js"
+            "framework": "nestjs"
         }
     }
 }
